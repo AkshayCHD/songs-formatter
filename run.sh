@@ -199,7 +199,32 @@ install_python_dependencies() {
     print_success "Python dependencies installed successfully"
 }
 
-# Function to verify installations
+# Function to verify system dependencies (Python and FFmpeg only)
+verify_system_dependencies() {
+    print_header "Verifying System Dependencies"
+    
+    # Check Python
+    if check_python_version; then
+        local version=$(python3 --version 2>&1)
+        print_success "Python: $version"
+    else
+        print_error "Python 3.7+ is required but not found"
+        return 1
+    fi
+    
+    # Check FFmpeg
+    if command_exists ffmpeg; then
+        local version=$(ffmpeg -version 2>&1 | head -n1)
+        print_success "FFmpeg: $version"
+    else
+        print_error "FFmpeg is required but not found"
+        return 1
+    fi
+    
+    return 0
+}
+
+# Function to verify all installations (including virtual environment)
 verify_installations() {
     print_header "Verifying Installations"
     
@@ -305,9 +330,9 @@ main() {
         print_success "FFmpeg is already installed"
     fi
     
-    # Verify all installations
-    if ! verify_installations; then
-        print_error "Installation verification failed. Please check the errors above."
+    # Verify system dependencies (Python and FFmpeg only)
+    if ! verify_system_dependencies; then
+        print_error "System dependency verification failed. Please check the errors above."
         exit 1
     fi
     
@@ -319,6 +344,12 @@ main() {
     
     # Create necessary directories
     create_directories
+    
+    # Verify all installations (including virtual environment)
+    if ! verify_installations; then
+        print_error "Installation verification failed. Please check the errors above."
+        exit 1
+    fi
     
     # Final verification
     print_header "Setup Complete"
