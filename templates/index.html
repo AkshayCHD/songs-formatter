@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Songs Formatter - YouTube Download, Clip & Merge</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            font-size: 1em;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab:hover {
+            background: #f0f0f0;
+            color: #667eea;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            background: white;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 40px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Common Styles */
+        .status-message {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .status-message.show {
+            display: block;
+        }
+
+        .status-message.success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .status-message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #f5c6cb;
+        }
+
+        .status-message.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-left: 4px solid #bee5eb;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        /* YouTube Download Styles */
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 10px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .status-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .status-item.error {
+            border-left-color: #ff6b6b;
+            background: #fff5f5;
+        }
+
+        .status-item.success {
+            border-left-color: #51cf66;
+            background: #f1fce4;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .download-link {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 16px;
+            background: #51cf66;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid #667eea;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Clip Styles */
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8f9ff;
+            margin-bottom: 30px;
+        }
+
+        .upload-area:hover {
+            border-color: #764ba2;
+            background: #f0f2ff;
+        }
+
+        .upload-area.dragover {
+            background: #e8ebff;
+            border-color: #764ba2;
+            transform: scale(1.02);
+        }
+
+        .upload-area i {
+            font-size: 3em;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .audio-section {
+            display: none;
+        }
+
+        .audio-section.show {
+            display: block;
+        }
+
+        .slider-container {
+            margin-bottom: 30px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #e0e0e0;
+            outline: none;
+            -webkit-appearance: none;
+            margin-bottom: 20px;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+        }
+
+        .clip-info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .processing {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            color: white;
+            display: none;
+            margin-bottom: 25px;
+        }
+
+        .processing.show {
+            display: block;
+        }
+
+        .download-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            color: white;
+            display: none;
+        }
+
+        .download-section.show {
+            display: block;
+        }
+
+        /* Merge Styles */
+        .file-list {
+            background: #f8f9ff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .remove-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .tabs {
+                flex-direction: column;
+            }
+
+            .tab-content {
+                padding: 20px;
+            }
+
+            .input-wrapper {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-music"></i> Songs Formatter</h1>
+            <p>Download YouTube videos, clip MP3 files, and merge audio files</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" data-tab="youtube">
+                <i class="fab fa-youtube"></i> YouTube Download
+            </button>
+            <button class="tab" data-tab="clip">
+                <i class="fas fa-cut"></i> Clip Audio
+            </button>
+            <button class="tab" data-tab="merge">
+                <i class="fas fa-compress"></i> Merge Files
+            </button>
+        </div>
+
+        <!-- YouTube Download Tab -->
+        <div id="youtube-tab" class="tab-content active">
+            <div class="status-message" id="youtubeStatusMessage"></div>
+            <div class="input-group">
+                <label for="youtubeUrl">YouTube URL</label>
+                <div class="input-wrapper">
+                    <input type="text" id="youtubeUrl" placeholder="https://www.youtube.com/watch?v=...">
+                    <button class="btn btn-primary" id="youtubeDownloadBtn">Download</button>
+                </div>
+            </div>
+            <div id="youtubeStatusContainer"></div>
+        </div>
+
+        <!-- Clip Tab -->
+        <div id="clip-tab" class="tab-content">
+            <div class="status-message" id="clipStatusMessage"></div>
+            <div class="upload-area" id="clipUploadArea">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>Drag and drop your MP3 file here</p>
+                <p>or <span style="color: #667eea; font-weight: bold;">click to browse</span></p>
+                <p style="font-size: 0.9em; color: #999; margin-top: 10px;">Supported: MP3, WAV, OGG, M4A</p>
+            </div>
+            <input type="file" id="clipFileInput" accept=".mp3,.wav,.ogg,.m4a">
+            <div class="audio-section" id="clipAudioSection">
+                <audio id="clipAudioPlayer" controls style="width: 100%; margin-bottom: 20px;"></audio>
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>Start Time</span>
+                        <span id="clipStartTimeDisplay">0:00</span>
+                    </div>
+                    <input type="range" id="clipStartSlider" class="slider" min="0" max="100" value="0" step="0.1">
+                    <div class="slider-label">
+                        <span>End Time</span>
+                        <span id="clipEndTimeDisplay">0:00</span>
+                    </div>
+                    <input type="range" id="clipEndSlider" class="slider" min="0" max="100" value="100" step="0.1">
+                </div>
+                <div class="clip-info">
+                    <h3>Clip Duration</h3>
+                    <div id="clipDuration">0:00</div>
+                </div>
+                <div class="button-group">
+                    <button class="btn btn-primary" id="clipBtn">Clip Audio</button>
+                    <button class="btn btn-secondary" id="clipResetBtn">Reset</button>
+                </div>
+            </div>
+            <div class="processing" id="clipProcessingDiv">
+                <div class="spinner"></div>
+                <h3>Clipping your audio...</h3>
+            </div>
+            <div class="download-section" id="clipDownloadSection">
+                <h3>Success!</h3>
+                <a href="#" class="btn btn-primary" id="clipDownloadBtn">Download</a>
+                <button class="btn btn-secondary" id="clipResetDownloadBtn">Clip Another</button>
+            </div>
+        </div>
+
+        <!-- Merge Tab -->
+        <div id="merge-tab" class="tab-content">
+            <div class="status-message" id="mergeStatusMessage"></div>
+            <div class="upload-area" id="mergeUploadArea">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>Drag and drop your MP3 files here</p>
+                <p>or <span style="color: #667eea; font-weight: bold;">click to browse</span></p>
+                <p style="font-size: 0.9em; color: #999; margin-top: 10px;">Supported: MP3, WAV, OGG, M4A</p>
+            </div>
+            <input type="file" id="mergeFileInput" multiple accept=".mp3,.wav,.ogg,.m4a">
+            <div class="file-list" id="mergeFileList">
+                <div style="text-align: center; color: #999; padding: 20px;">No files selected yet</div>
+            </div>
+            <div class="button-group">
+                <button class="btn btn-primary" id="mergeBtn" disabled>Merge Files</button>
+                <button class="btn btn-secondary" id="mergeClearBtn">Clear</button>
+            </div>
+            <div class="processing" id="mergeProcessingDiv">
+                <div class="spinner"></div>
+                <h3>Merging your files...</h3>
+            </div>
+            <div class="download-section" id="mergeDownloadSection">
+                <h3>Success!</h3>
+                <a href="#" class="btn btn-primary" id="mergeDownloadBtn">Download</a>
+                <button class="btn btn-secondary" id="mergeResetBtn">Merge More</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabName = tab.dataset.tab;
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(`${tabName}-tab`).classList.add('active');
+            });
+        });
+
+        // ==================== YouTube Download ====================
+        const youtubeUrl = document.getElementById('youtubeUrl');
+        const youtubeDownloadBtn = document.getElementById('youtubeDownloadBtn');
+        const youtubeStatusContainer = document.getElementById('youtubeStatusContainer');
+        let youtubeDownloads = {};
+
+        youtubeDownloadBtn.addEventListener('click', async () => {
+            const url = youtubeUrl.value.trim();
+            if (!url) {
+                showStatus('youtubeStatusMessage', 'Please enter a YouTube URL', 'error');
+                return;
+            }
+
+            youtubeDownloadBtn.disabled = true;
+            youtubeDownloadBtn.textContent = 'Starting...';
+
+            try {
+                const response = await fetch('/api/youtube/download', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url })
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    youtubeUrl.value = '';
+                    pollYoutubeStatus(data.download_id);
+                } else {
+                    showStatus('youtubeStatusMessage', data.error || 'Failed to start download', 'error');
+                }
+            } catch (error) {
+                showStatus('youtubeStatusMessage', error.message, 'error');
+            } finally {
+                youtubeDownloadBtn.disabled = false;
+                youtubeDownloadBtn.textContent = 'Download';
+            }
+        });
+
+        async function pollYoutubeStatus(downloadId) {
+            const maxAttempts = 3600;
+            let attempts = 0;
+
+            const poll = async () => {
+                if (attempts >= maxAttempts) return;
+
+                try {
+                    const response = await fetch(`/api/youtube/status/${downloadId}`);
+                    const data = await response.json();
+                    youtubeDownloads[downloadId] = data;
+                    updateYoutubeUI();
+
+                    if (data.status === 'downloading' || data.status === 'queued' || data.status === 'processing') {
+                        attempts++;
+                        setTimeout(poll, 1000);
+                    }
+                } catch (error) {
+                    console.error('Poll error:', error);
+                }
+            };
+
+            poll();
+        }
+
+        function updateYoutubeUI() {
+            youtubeStatusContainer.innerHTML = Object.entries(youtubeDownloads).map(([id, download]) => `
+                <div class="status-item ${download.status}">
+                    <div style="font-weight: 600; margin-bottom: 8px;">
+                        ${download.status !== 'completed' && download.status !== 'error' ? '<span class="spinner"></span>' : ''}
+                        ${download.title || download.message}
+                    </div>
+                    ${download.status !== 'error' ? `
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" style="width: ${download.progress || 0}%"></div>
+                        </div>
+                    ` : ''}
+                    ${download.status === 'completed' && download.file ? `
+                        <a href="/api/youtube/download/${download.file}" class="download-link">Download MP3</a>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        // ==================== Clip Audio ====================
+        const clipUploadArea = document.getElementById('clipUploadArea');
+        const clipFileInput = document.getElementById('clipFileInput');
+        const clipAudioSection = document.getElementById('clipAudioSection');
+        const clipAudioPlayer = document.getElementById('clipAudioPlayer');
+        const clipStartSlider = document.getElementById('clipStartSlider');
+        const clipEndSlider = document.getElementById('clipEndSlider');
+        const clipStartTimeDisplay = document.getElementById('clipStartTimeDisplay');
+        const clipEndTimeDisplay = document.getElementById('clipEndTimeDisplay');
+        const clipDuration = document.getElementById('clipDuration');
+        const clipBtn = document.getElementById('clipBtn');
+        let clipFileId = null;
+        let clipExtension = null;
+        let clipAudioDuration = 0;
+
+        clipUploadArea.addEventListener('click', () => clipFileInput.click());
+        clipUploadArea.addEventListener('dragover', (e) => { e.preventDefault(); clipUploadArea.classList.add('dragover'); });
+        clipUploadArea.addEventListener('dragleave', () => clipUploadArea.classList.remove('dragover'));
+        clipUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            clipUploadArea.classList.remove('dragover');
+            handleClipFile(e.dataTransfer.files[0]);
+        });
+        clipFileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) handleClipFile(e.target.files[0]);
+        });
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function updateClipTimeDisplays() {
+            const startTime = parseFloat(clipStartSlider.value);
+            const endTime = parseFloat(clipEndSlider.value);
+            clipStartTimeDisplay.textContent = formatTime(startTime);
+            clipEndTimeDisplay.textContent = formatTime(endTime);
+            clipDuration.textContent = formatTime(Math.max(0, endTime - startTime));
+        }
+
+        clipStartSlider.addEventListener('input', () => {
+            const startTime = parseFloat(clipStartSlider.value);
+            const endTime = parseFloat(clipEndSlider.value);
+            if (startTime >= endTime) clipStartSlider.value = Math.max(0, endTime - 0.1);
+            updateClipTimeDisplays();
+            clipAudioPlayer.currentTime = parseFloat(clipStartSlider.value);
+        });
+
+        clipEndSlider.addEventListener('input', () => {
+            const startTime = parseFloat(clipStartSlider.value);
+            const endTime = parseFloat(clipEndSlider.value);
+            if (endTime <= startTime) clipEndSlider.value = Math.min(clipAudioDuration, startTime + 0.1);
+            updateClipTimeDisplays();
+        });
+
+        clipAudioPlayer.addEventListener('loadedmetadata', () => {
+            clipAudioDuration = clipAudioPlayer.duration;
+            clipStartSlider.max = clipAudioDuration;
+            clipEndSlider.max = clipAudioDuration;
+            clipEndSlider.value = clipAudioDuration;
+            updateClipTimeDisplays();
+        });
+
+        async function handleClipFile(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch('/api/clip/upload', { method: 'POST', body: formData });
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    clipFileId = data.file_id;
+                    clipExtension = data.extension;
+                    clipAudioDuration = data.duration;
+                    clipAudioPlayer.src = URL.createObjectURL(file);
+                    clipAudioSection.classList.add('show');
+                    showStatus('clipStatusMessage', 'File uploaded successfully', 'success');
+                } else {
+                    showStatus('clipStatusMessage', data.error || 'Failed to upload', 'error');
+                }
+            } catch (error) {
+                showStatus('clipStatusMessage', error.message, 'error');
+            }
+        }
+
+        clipBtn.addEventListener('click', async () => {
+            const startTime = parseFloat(clipStartSlider.value);
+            const endTime = parseFloat(clipEndSlider.value);
+
+            if (startTime >= endTime) {
+                showStatus('clipStatusMessage', 'Invalid time range', 'error');
+                return;
+            }
+
+            document.getElementById('clipProcessingDiv').classList.add('show');
+            document.getElementById('clipDownloadSection').classList.remove('show');
+
+            try {
+                const response = await fetch('/api/clip/clip', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        file_id: clipFileId,
+                        start_time: startTime,
+                        end_time: endTime,
+                        extension: clipExtension
+                    })
+                });
+
+                const data = await response.json();
+                if (response.ok && data.success) {
+                    document.getElementById('clipDownloadBtn').href = `/api/download/${data.filename}`;
+                    document.getElementById('clipProcessingDiv').classList.remove('show');
+                    document.getElementById('clipDownloadSection').classList.add('show');
+                } else {
+                    document.getElementById('clipProcessingDiv').classList.remove('show');
+                    showStatus('clipStatusMessage', data.error || 'Failed to clip', 'error');
+                }
+            } catch (error) {
+                document.getElementById('clipProcessingDiv').classList.remove('show');
+                showStatus('clipStatusMessage', error.message, 'error');
+            }
+        });
+
+        document.getElementById('clipResetBtn').addEventListener('click', () => {
+            clipFileId = null;
+            clipExtension = null;
+            clipAudioDuration = 0;
+            clipFileInput.value = '';
+            clipAudioPlayer.src = '';
+            clipAudioSection.classList.remove('show');
+            document.getElementById('clipDownloadSection').classList.remove('show');
+        });
+
+        document.getElementById('clipResetDownloadBtn').addEventListener('click', () => {
+            document.getElementById('clipResetBtn').click();
+        });
+
+        // ==================== Merge Files ====================
+        const mergeUploadArea = document.getElementById('mergeUploadArea');
+        const mergeFileInput = document.getElementById('mergeFileInput');
+        const mergeFileList = document.getElementById('mergeFileList');
+        const mergeBtn = document.getElementById('mergeBtn');
+        let mergeFiles = [];
+
+        mergeUploadArea.addEventListener('click', () => mergeFileInput.click());
+        mergeUploadArea.addEventListener('dragover', (e) => { e.preventDefault(); mergeUploadArea.classList.add('dragover'); });
+        mergeUploadArea.addEventListener('dragleave', () => mergeUploadArea.classList.remove('dragover'));
+        mergeUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            mergeUploadArea.classList.remove('dragover');
+            handleMergeFiles(e.dataTransfer.files);
+        });
+        mergeFileInput.addEventListener('change', (e) => handleMergeFiles(e.target.files));
+
+        function handleMergeFiles(files) {
+            for (let file of files) {
+                if (!mergeFiles.find(f => f.name === file.name && f.size === file.size)) {
+                    mergeFiles.push(file);
+                }
+            }
+            renderMergeFileList();
+            mergeBtn.disabled = mergeFiles.length < 2;
+        }
+
+        function renderMergeFileList() {
+            if (mergeFiles.length === 0) {
+                mergeFileList.innerHTML = '<div style="text-align: center; color: #999; padding: 20px;">No files selected yet</div>';
+                return;
+            }
+            mergeFileList.innerHTML = mergeFiles.map((file, index) => `
+                <div class="file-item">
+                    <div>
+                        <div style="font-weight: 600;">${file.name}</div>
+                        <div style="font-size: 0.85em; color: #999;">${(file.size / 1024 / 1024).toFixed(2)} MB</div>
+                    </div>
+                    <button class="remove-btn" onclick="removeMergeFile(${index})">Remove</button>
+                </div>
+            `).join('');
+        }
+
+        window.removeMergeFile = (index) => {
+            mergeFiles.splice(index, 1);
+            renderMergeFileList();
+            mergeBtn.disabled = mergeFiles.length < 2;
+        };
+
+        mergeBtn.addEventListener('click', async () => {
+            if (mergeFiles.length < 2) {
+                showStatus('mergeStatusMessage', 'Please select at least 2 files', 'error');
+                return;
+            }
+
+            const formData = new FormData();
+            mergeFiles.forEach(file => formData.append('files', file));
+
+            document.getElementById('mergeProcessingDiv').classList.add('show');
+            document.getElementById('mergeDownloadSection').classList.remove('show');
+
+            try {
+                const response = await fetch('/api/merge/merge', { method: 'POST', body: formData });
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    document.getElementById('mergeDownloadBtn').href = `/api/download/${data.filename}`;
+                    document.getElementById('mergeProcessingDiv').classList.remove('show');
+                    document.getElementById('mergeDownloadSection').classList.add('show');
+                } else {
+                    document.getElementById('mergeProcessingDiv').classList.remove('show');
+                    showStatus('mergeStatusMessage', data.error || 'Failed to merge', 'error');
+                }
+            } catch (error) {
+                document.getElementById('mergeProcessingDiv').classList.remove('show');
+                showStatus('mergeStatusMessage', error.message, 'error');
+            }
+        });
+
+        document.getElementById('mergeClearBtn').addEventListener('click', () => {
+            mergeFiles = [];
+            mergeFileInput.value = '';
+            renderMergeFileList();
+            mergeBtn.disabled = true;
+        });
+
+        document.getElementById('mergeResetBtn').addEventListener('click', () => {
+            document.getElementById('mergeClearBtn').click();
+            document.getElementById('mergeDownloadSection').classList.remove('show');
+        });
+
+        // Utility function
+        function showStatus(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `status-message show ${type}`;
+            setTimeout(() => element.classList.remove('show'), 5000);
+        }
+    </script>
+</body>
+</html>
+
