@@ -12,17 +12,23 @@ A unified web application that combines three powerful audio tools:
 - Real-time download progress tracking
 - Automatic audio conversion using FFmpeg
 
+![YouTube Downloader](screenshots/youtube-downloader.png)
+
 ### ✂️ Audio Clipper
 - Upload audio files (MP3, WAV, OGG, M4A)
 - Visual timeline with start/end time sliders
 - Preview audio before clipping
 - Extract specific segments from audio files
 
+![Audio Clipper](screenshots/audio-clipper.png)
+
 ### 🔀 Audio Merger
 - Merge multiple audio files into one
 - Support for MP3, WAV, OGG, M4A formats
 - Drag and drop file selection
 - Maintains audio quality during merge
+
+![Audio Merger](screenshots/audio-merger.png)
 
 ## Requirements
 
@@ -56,7 +62,7 @@ A unified web application that combines three powerful audio tools:
    **No manual installation needed!**
 
 4. **Open your browser:**
-   Navigate to `http://127.0.0.1:5000`
+   Navigate to `http://127.0.0.1:5001`
 
 ## What the Setup Script Does
 
@@ -170,6 +176,7 @@ songs-formatter/
 - **Audio Processing**: FFmpeg
 - **YouTube Download**: yt-dlp
 - **CORS**: Enabled for cross-origin requests
+- **Default Port**: 5001 (changed from 5000 to avoid macOS AirPlay Receiver conflicts)
 
 ## Notes
 
@@ -177,7 +184,7 @@ songs-formatter/
 - Supported audio formats: MP3, WAV, OGG, M4A
 - Output format: MP3 (192kbps)
 - Files are automatically cleaned up after processing
-- The application runs on `http://127.0.0.1:5000` by default
+- The application runs on `http://127.0.0.1:5001` by default (port 5001 to avoid conflicts with macOS AirPlay Receiver)
 
 ## Troubleshooting
 
@@ -227,9 +234,9 @@ chmod +x run.sh
 - Make sure you have write permissions in the project directory
 
 **Port already in use:**
-- Another application might be using port 5000
-- Kill the process: `lsof -ti:5000 | xargs kill -9` (macOS/Linux)
-- Or change the port in `app.py`
+- The app uses port 5001 by default to avoid macOS AirPlay Receiver conflicts
+- If port 5001 is in use, kill the process: `lsof -ti:5001 | xargs kill -9` (macOS/Linux)
+- Or change the port in `app.py` (line 516)
 
 ## License
 

@@ -256,7 +256,8 @@ start_application() {
     source venv/bin/activate
     
     print_status "Starting Flask server..."
-    print_success "Application will be available at: http://127.0.0.1:5000"
+    print_success "Application will be available at: http://127.0.0.1:5001"
+    print_status "Note: Using port 5001 to avoid conflicts with macOS AirPlay Receiver"
     print_status "Press Ctrl+C to stop the server"
     echo
     
