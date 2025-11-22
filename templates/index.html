@@ -3,294 +3,504 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Songs Formatter - YouTube Download, Clip & Merge</title>
+    <title>Songs Formatter — Audio Workspace</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        * {
+        :root {
+            --bg: #f8f9fa;
+            --surface: #ffffff;
+            --surface-alt: #f1f3f4;
+            --border: #e2e6eb;
+            --primary: #1a73e8;
+            --primary-dark: #0f5dc3;
+            --primary-light: #e3edfb;
+            --text: #202124;
+            --text-muted: #5f6368;
+            --success: #1e8e3e;
+            --danger: #d93025;
+            --warning: #f29900;
+            --radius-lg: 20px;
+            --radius-md: 14px;
+            --radius-sm: 10px;
+            --shadow-card: 0 15px 35px rgba(32, 33, 36, 0.07);
+            --shadow-floating: 0 20px 55px rgba(32, 33, 36, 0.12);
+        }
+
+        *, *::before, *::after {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+            background: var(--bg);
+            color: var(--text);
             min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
-            animation: slideUp 0.6s ease-out;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px;
-            text-align: center;
-        }
-
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-
-        .header p {
-            font-size: 1.1em;
-            opacity: 0.9;
-        }
-
-        .tabs {
             display: flex;
-            background: #f8f9fa;
-            border-bottom: 2px solid #e0e0e0;
         }
 
-        .tab {
-            flex: 1;
-            padding: 20px;
-            text-align: center;
-            cursor: pointer;
-            background: transparent;
-            border: none;
-            font-size: 1em;
+        .app-shell {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        .app-bar {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 18px 36px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .brand-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #4285f4, #34a853);
+            display: grid;
+            place-items: center;
+            color: #fff;
+            font-size: 22px;
+        }
+
+        .brand h1 {
+            font-size: 1.35rem;
             font-weight: 600;
-            color: #666;
-            transition: all 0.3s ease;
-            border-bottom: 3px solid transparent;
         }
 
-        .tab:hover {
-            background: #f0f0f0;
-            color: #667eea;
+        .top-actions {
+            display: flex;
+            gap: 12px;
         }
 
-        .tab.active {
-            color: #667eea;
-            border-bottom-color: #667eea;
-            background: white;
+        .ghost-btn, .primary-btn {
+            border: 1px solid transparent;
+            border-radius: 999px;
+            padding: 10px 18px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            background: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .ghost-btn {
+            border-color: var(--border);
+            color: var(--text);
+            background: var(--surface);
+        }
+
+        .ghost-btn:hover {
+            border-color: var(--text-muted);
+        }
+
+        .primary-btn {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        .primary-btn:hover {
+            background: var(--primary-dark);
+            box-shadow: 0 10px 30px rgba(26, 115, 232, 0.25);
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 32px;
+            padding: 36px;
+            flex: 1;
+        }
+
+        .side-nav {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 28px 20px;
+            box-shadow: var(--shadow-card);
+            position: sticky;
+            top: 120px;
+            height: fit-content;
+        }
+
+        .nav-section {
+            margin-bottom: 24px;
+        }
+
+        .nav-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .nav-item {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border: none;
+            background: transparent;
+            border-radius: 12px;
+            font-weight: 500;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item i {
+            width: 28px;
+            height: 28px;
+            display: grid;
+            place-items: center;
+            border-radius: 8px;
+            background: var(--surface-alt);
+            color: var(--text-muted);
+        }
+
+        .nav-item.active {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .nav-item.active i {
+            background: #d2e3fc;
+            color: var(--primary);
+        }
+
+        .content {
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
         }
 
         .tab-content {
             display: none;
-            padding: 40px;
+            gap: 24px;
         }
 
         .tab-content.active {
-            display: block;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* Common Styles */
-        .status-message {
-            padding: 15px 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            display: none;
-            animation: slideIn 0.3s ease-out;
+        .panel {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            box-shadow: var(--shadow-card);
+            border: 1px solid var(--border);
         }
 
-        .status-message.show {
-            display: block;
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 24px;
         }
 
-        .status-message.success {
-            background: #d4edda;
-            color: #155724;
-            border-left: 4px solid #28a745;
+        .panel-header h2 {
+            font-size: 1.5rem;
+            margin-bottom: 6px;
         }
 
-        .status-message.error {
-            background: #f8d7da;
-            color: #721c24;
-            border-left: 4px solid #f5c6cb;
+        .eyebrow {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--text-muted);
         }
 
-        .status-message.info {
-            background: #d1ecf1;
-            color: #0c5460;
-            border-left: 4px solid #bee5eb;
-        }
-
-        .btn {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 10px;
-            font-size: 1em;
+        .chip {
+            border-radius: 999px;
+            padding: 6px 14px;
+            font-size: 0.85rem;
             font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid transparent;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        .chip-success {
+            color: var(--success);
+            background: #e6f4ea;
+            border-color: #ccead6;
         }
 
-        .btn-primary:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        .chip-muted {
+            color: var(--text-muted);
+            background: var(--surface-alt);
+            border-color: var(--border);
         }
 
-        .btn-primary:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        .grid-two {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
         }
 
-        .btn-secondary {
-            background: #f0f0f0;
-            color: #333;
+        .stepper {
+            display: flex;
+            gap: 18px;
+            flex-wrap: wrap;
         }
 
-        .btn-secondary:hover {
-            background: #e0e0e0;
+        .step {
+            flex: 1;
+            min-width: 200px;
+            background: var(--surface-alt);
+            border-radius: var(--radius-md);
+            padding: 18px;
+            border: 1px solid var(--border);
         }
 
-        /* YouTube Download Styles */
+        .step span {
+            display: inline-flex;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            margin-bottom: 8px;
+        }
+
         .input-group {
-            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 18px;
         }
 
-        .input-group label {
-            display: block;
-            margin-bottom: 10px;
+        label {
             font-weight: 600;
-            color: #333;
         }
 
         .input-wrapper {
             display: flex;
-            gap: 10px;
+            gap: 12px;
         }
 
         input[type="text"] {
             flex: 1;
-            padding: 12px 16px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 14px;
-            transition: border-color 0.3s;
+            padding: 14px 16px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            font-size: 1rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            background: #fff;
         }
 
         input[type="text"]:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.15);
+        }
+
+        .btn {
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 14px 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--primary-dark);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: var(--surface-alt);
+            color: var(--text);
+        }
+
+        .btn-secondary:hover {
+            background: #e4e7ea;
+        }
+
+        .status-message {
+            padding: 14px 18px;
+            border-radius: var(--radius-sm);
+            border: 1px solid transparent;
+            display: none;
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
+
+        .status-message.show {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-message.success {
+            background: #e6f4ea;
+            color: var(--success);
+            border-color: #ccead6;
+        }
+
+        .status-message.error {
+            background: #fce8e6;
+            color: var(--danger);
+            border-color: #fad2cf;
+        }
+
+        .status-message.info {
+            background: #e8f0fe;
+            color: var(--primary);
+            border-color: #d2e3fc;
+        }
+
+        .status-feed {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
         }
 
         .status-item {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            border-left: 4px solid #667eea;
-        }
-
-        .status-item.error {
-            border-left-color: #ff6b6b;
-            background: #fff5f5;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            background: var(--surface-alt);
         }
 
         .status-item.success {
-            border-left-color: #51cf66;
-            background: #f1fce4;
+            border-color: #ccead6;
+            background: #e9f5ee;
+        }
+
+        .status-item.error {
+            border-color: #f8d1cf;
+            background: #fdeceb;
+        }
+
+        .status-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .status-chip {
+            font-size: 0.8rem;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: var(--surface);
+            border: 1px solid var(--border);
         }
 
         .progress-bar-container {
             width: 100%;
-            height: 6px;
-            background: #e0e0e0;
-            border-radius: 10px;
+            height: 8px;
+            background: var(--surface);
+            border-radius: 999px;
             overflow: hidden;
-            margin: 10px 0;
         }
 
         .progress-bar {
             height: 100%;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
             width: 0%;
+            background: linear-gradient(135deg, #1a73e8, #34a853);
             transition: width 0.3s ease;
         }
 
         .download-link {
             display: inline-block;
-            margin-top: 10px;
-            padding: 8px 16px;
-            background: #51cf66;
-            color: white;
-            text-decoration: none;
-            border-radius: 6px;
-            font-size: 13px;
+            margin-top: 12px;
             font-weight: 600;
+            color: #0b8043;
+            text-decoration: none;
         }
 
         .spinner {
             display: inline-block;
-            width: 12px;
-            height: 12px;
-            border: 2px solid #667eea;
+            width: 14px;
+            height: 14px;
+            border: 2px solid var(--primary);
             border-top-color: transparent;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
-            margin-right: 8px;
         }
 
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
 
-        /* Clip Styles */
+        .silent-pill {
+            padding: 6px 10px;
+            border-radius: 8px;
+            background: var(--surface-alt);
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
         .upload-area {
-            border: 3px dashed #667eea;
-            border-radius: 15px;
-            padding: 40px 20px;
+            border: 1px dashed var(--border);
+            border-radius: var(--radius-md);
+            background: var(--surface-alt);
+            padding: 32px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.3s ease;
-            background: #f8f9ff;
-            margin-bottom: 30px;
+            transition: border-color 0.2s ease, transform 0.2s ease;
         }
 
         .upload-area:hover {
-            border-color: #764ba2;
-            background: #f0f2ff;
+            border-color: var(--primary);
+            transform: translateY(-2px);
         }
 
         .upload-area.dragover {
-            background: #e8ebff;
-            border-color: #764ba2;
-            transform: scale(1.02);
+            border-color: var(--primary);
+            background: #e1ecfd;
         }
 
         .upload-area i {
-            font-size: 3em;
-            color: #667eea;
-            margin-bottom: 15px;
-        }
-
-        #fileInput {
-            display: none;
+            font-size: 2rem;
+            margin-bottom: 12px;
+            color: var(--primary);
         }
 
         .audio-section {
             display: none;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            background: var(--surface-alt);
         }
 
         .audio-section.show {
@@ -298,239 +508,476 @@
         }
 
         .slider-container {
-            margin-bottom: 30px;
+            margin-top: 24px;
         }
 
         .slider-label {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
-            font-weight: 600;
-            color: #333;
+            margin-bottom: 8px;
+            color: var(--text-muted);
         }
 
         .slider {
             width: 100%;
-            height: 8px;
-            border-radius: 5px;
-            background: #e0e0e0;
+            appearance: none;
+            height: 6px;
+            border-radius: 999px;
+            background: var(--border);
             outline: none;
-            -webkit-appearance: none;
-            margin-bottom: 20px;
         }
 
         .slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
             appearance: none;
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
-            background: #667eea;
+            background: var(--primary);
+            box-shadow: 0 0 0 4px rgba(26, 115, 232, 0.2);
             cursor: pointer;
         }
 
         .clip-info {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 25px;
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 20px;
+            border-radius: var(--radius-md);
+            background: var(--primary);
+            color: #fff;
+            margin-top: 18px;
         }
 
         .button-group {
             display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-top: 20px;
         }
 
-        .processing {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 12px;
-            padding: 30px;
-            text-align: center;
-            color: white;
+        .processing, .download-section {
             display: none;
-            margin-bottom: 25px;
+            border-radius: var(--radius-md);
+            padding: 24px;
+            margin-top: 18px;
+            color: #fff;
+            background: var(--primary);
         }
 
-        .processing.show {
-            display: block;
+        .processing.show, .download-section.show {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: flex-start;
         }
 
-        .download-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 12px;
-            padding: 25px;
-            text-align: center;
-            color: white;
-            display: none;
-        }
-
-        .download-section.show {
-            display: block;
-        }
-
-        /* Merge Styles */
         .file-list {
-            background: #f8f9ff;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 25px;
-            max-height: 250px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: var(--surface-alt);
+            padding: 16px;
+            max-height: 260px;
             overflow-y: auto;
         }
 
         .file-item {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 12px 15px;
-            background: white;
-            border-radius: 8px;
+            justify-content: space-between;
+            background: var(--surface);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            border: 1px solid var(--border);
             margin-bottom: 10px;
-            border-left: 4px solid #667eea;
         }
 
         .remove-btn {
-            background: #ff6b6b;
-            color: white;
             border: none;
-            border-radius: 6px;
+            background: rgba(217, 48, 37, 0.12);
+            color: var(--danger);
             padding: 6px 12px;
+            border-radius: 8px;
             cursor: pointer;
         }
 
-        @media (max-width: 768px) {
-            .tabs {
-                flex-direction: column;
+        .helper-callout {
+            border-radius: var(--radius-md);
+            padding: 18px 20px;
+            background: #fff7e6;
+            border: 1px solid #ffe2ad;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .activity-list li {
+            list-style: none;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .activity-list li:last-child {
+            border-bottom: none;
+        }
+
+        .empty-state {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 2rem;
+            margin-bottom: 14px;
+            color: var(--border);
+        }
+
+        @media (max-width: 1100px) {
+            .layout {
+                grid-template-columns: 1fr;
             }
 
-            .tab-content {
-                padding: 20px;
+            .side-nav {
+                position: static;
+                top: auto;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .app-bar {
+                flex-direction: column;
+                gap: 16px;
+                align-items: flex-start;
             }
 
             .input-wrapper {
+                flex-direction: column;
+            }
+
+            .button-group {
                 flex-direction: column;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1><i class="fas fa-music"></i> Songs Formatter</h1>
-            <p>Download YouTube videos, clip MP3 files, and merge audio files</p>
-        </div>
-
-        <div class="tabs">
-            <button class="tab active" data-tab="youtube">
-                <i class="fab fa-youtube"></i> YouTube Download
-            </button>
-            <button class="tab" data-tab="clip">
-                <i class="fas fa-cut"></i> Clip Audio
-            </button>
-            <button class="tab" data-tab="merge">
-                <i class="fas fa-compress"></i> Merge Files
-            </button>
-        </div>
-
-        <!-- YouTube Download Tab -->
-        <div id="youtube-tab" class="tab-content active">
-            <div class="status-message" id="youtubeStatusMessage"></div>
-            <div class="input-group">
-                <label for="youtubeUrl">YouTube URL</label>
-                <div class="input-wrapper">
-                    <input type="text" id="youtubeUrl" placeholder="https://www.youtube.com/watch?v=...">
-                    <button class="btn btn-primary" id="youtubeDownloadBtn">Download</button>
+    <div class="app-shell">
+        <header class="app-bar">
+            <div class="brand">
+                <div class="brand-icon">
+                    <i class="fas fa-music"></i>
+                </div>
+                <div>
+                    <h1>Songs Formatter</h1>
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">Downloads, clipping & merging in one workspace</p>
                 </div>
             </div>
-            <div id="youtubeStatusContainer"></div>
-        </div>
-
-        <!-- Clip Tab -->
-        <div id="clip-tab" class="tab-content">
-            <div class="status-message" id="clipStatusMessage"></div>
-            <div class="upload-area" id="clipUploadArea">
-                <i class="fas fa-cloud-upload-alt"></i>
-                <p>Drag and drop your MP3 file here</p>
-                <p>or <span style="color: #667eea; font-weight: bold;">click to browse</span></p>
-                <p style="font-size: 0.9em; color: #999; margin-top: 10px;">Supported: MP3, WAV, OGG, M4A</p>
+            <div class="top-actions">
+                <button class="ghost-btn"><i class="far fa-life-ring"></i> Support</button>
+                <button class="ghost-btn"><i class="far fa-moon"></i> Theme</button>
+                <button class="primary-btn"><i class="far fa-play-circle"></i> Start session</button>
             </div>
-            <input type="file" id="clipFileInput" accept=".mp3,.wav,.ogg,.m4a">
-            <div class="audio-section" id="clipAudioSection">
-                <audio id="clipAudioPlayer" controls style="width: 100%; margin-bottom: 20px;"></audio>
-                <div class="slider-container">
-                    <div class="slider-label">
-                        <span>Start Time</span>
-                        <span id="clipStartTimeDisplay">0:00</span>
+        </header>
+
+        <div class="layout">
+            <nav class="side-nav">
+                <div class="nav-section">
+                    <p class="nav-label">Tools</p>
+                    <button class="nav-item tab-trigger active" data-tab="youtube">
+                        <i class="fab fa-youtube"></i>YouTube Downloader
+                    </button>
+                    <button class="nav-item tab-trigger" data-tab="clip">
+                        <i class="fas fa-cut"></i>Clip Audio
+                    </button>
+                    <button class="nav-item tab-trigger" data-tab="merge">
+                        <i class="fas fa-compress"></i>Merge Files
+                    </button>
+                </div>
+                <div class="nav-section">
+                    <p class="nav-label">Workspace</p>
+                    <button class="nav-item tab-trigger" data-tab="settings">
+                        <i class="fas fa-sliders-h"></i>Settings
+                    </button>
+                    <button class="nav-item tab-trigger" data-tab="activity">
+                        <i class="far fa-clock"></i>Activity log
+                    </button>
+                </div>
+            </nav>
+
+            <main class="content">
+                <!-- YouTube Downloader -->
+                <section id="youtube-tab" class="tab-content active">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div>
+                                <p class="eyebrow">YouTube Downloader</p>
+                                <h2>Convert any video into a clean MP3</h2>
+                                <p style="color: var(--text-muted);">Queue multiple links, track progress in real time, and grab files when they are ready.</p>
+                            </div>
+                            <span class="chip chip-success"><i class="fas fa-circle"></i> Healthy</span>
+                        </div>
+
+                        <div class="grid-two">
+                            <div>
+                                <div class="stepper">
+                                    <div class="step">
+                                        <span>1</span>
+                                        <strong>Paste URL</strong>
+                                        <p style="color: var(--text-muted); font-size: 0.9rem;">Drop a YouTube link — we validate it instantly.</p>
+                                    </div>
+                                    <div class="step">
+                                        <span>2</span>
+                                        <strong>Confirm settings</strong>
+                                        <p style="color: var(--text-muted); font-size: 0.9rem;">Default quality is 192kbps MP3, change in settings anytime.</p>
+                                    </div>
+                                    <div class="step">
+                                        <span>3</span>
+                                        <strong>Track download</strong>
+                                        <p style="color: var(--text-muted); font-size: 0.9rem;">Progress and status chips update live, even if you switch tools.</p>
+                                    </div>
+                                </div>
+
+                                <div class="status-message" id="youtubeStatusMessage"></div>
+
+                                <div class="input-group">
+                                    <label for="youtubeUrl">Paste YouTube link</label>
+                                    <div class="input-wrapper">
+                                        <input type="text" id="youtubeUrl" placeholder="https://www.youtube.com/watch?v=...">
+                                        <button class="btn btn-primary" id="youtubeDownloadBtn">Download</button>
+                                    </div>
+                                    <span class="silent-pill"><i class="far fa-lightbulb"></i> Pro tip: queue up to 5 downloads simultaneously.</span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="helper-callout">
+                                    <i class="fas fa-shield-alt" style="color: var(--primary);"></i>
+                                    <div>
+                                        <strong>Smart cleanup</strong>
+                                        <p style="color: var(--text-muted); font-size: 0.9rem;">Files auto-delete after 24h. Adjust retention in Settings.</p>
+                                    </div>
+                                </div>
+                                <div style="margin-top: 18px;">
+                                    <h3 style="margin-bottom: 12px;">Live queue</h3>
+                                    <div class="status-feed" id="youtubeStatusContainer">
+                                        <div class="empty-state">
+                                            <i class="far fa-circle-play"></i>
+                                            <p>Drop a link to get your first download going.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <input type="range" id="clipStartSlider" class="slider" min="0" max="100" value="0" step="0.1">
-                    <div class="slider-label">
-                        <span>End Time</span>
-                        <span id="clipEndTimeDisplay">0:00</span>
-                    </div>
-                    <input type="range" id="clipEndSlider" class="slider" min="0" max="100" value="100" step="0.1">
-                </div>
-                <div class="clip-info">
-                    <h3>Clip Duration</h3>
-                    <div id="clipDuration">0:00</div>
-                </div>
-                <div class="button-group">
-                    <button class="btn btn-primary" id="clipBtn">Clip Audio</button>
-                    <button class="btn btn-secondary" id="clipResetBtn">Reset</button>
-                </div>
-            </div>
-            <div class="processing" id="clipProcessingDiv">
-                <div class="spinner"></div>
-                <h3>Clipping your audio...</h3>
-            </div>
-            <div class="download-section" id="clipDownloadSection">
-                <h3>Success!</h3>
-                <a href="#" class="btn btn-primary" id="clipDownloadBtn">Download</a>
-                <button class="btn btn-secondary" id="clipResetDownloadBtn">Clip Another</button>
-            </div>
-        </div>
+                </section>
 
-        <!-- Merge Tab -->
-        <div id="merge-tab" class="tab-content">
-            <div class="status-message" id="mergeStatusMessage"></div>
-            <div class="upload-area" id="mergeUploadArea">
-                <i class="fas fa-cloud-upload-alt"></i>
-                <p>Drag and drop your MP3 files here</p>
-                <p>or <span style="color: #667eea; font-weight: bold;">click to browse</span></p>
-                <p style="font-size: 0.9em; color: #999; margin-top: 10px;">Supported: MP3, WAV, OGG, M4A</p>
-            </div>
-            <input type="file" id="mergeFileInput" multiple accept=".mp3,.wav,.ogg,.m4a">
-            <div class="file-list" id="mergeFileList">
-                <div style="text-align: center; color: #999; padding: 20px;">No files selected yet</div>
-            </div>
-            <div class="button-group">
-                <button class="btn btn-primary" id="mergeBtn" disabled>Merge Files</button>
-                <button class="btn btn-secondary" id="mergeClearBtn">Clear</button>
-            </div>
-            <div class="processing" id="mergeProcessingDiv">
-                <div class="spinner"></div>
-                <h3>Merging your files...</h3>
-            </div>
-            <div class="download-section" id="mergeDownloadSection">
-                <h3>Success!</h3>
-                <a href="#" class="btn btn-primary" id="mergeDownloadBtn">Download</a>
-                <button class="btn btn-secondary" id="mergeResetBtn">Merge More</button>
-            </div>
+                <!-- Clip Audio -->
+                <section id="clip-tab" class="tab-content">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div>
+                                <p class="eyebrow">Audio clipper</p>
+                                <h2>Extract only the parts you need</h2>
+                                <p style="color: var(--text-muted);">Visual handles + duration controls keep edits precise and friendly.</p>
+                            </div>
+                            <span class="chip chip-muted"><i class="far fa-bell"></i> Idle</span>
+                        </div>
+
+                        <div class="status-message" id="clipStatusMessage"></div>
+
+                        <div class="grid-two" style="align-items: flex-start;">
+                            <div>
+                                <div class="upload-area" id="clipUploadArea">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <p><strong>Drop audio or browse</strong></p>
+                                    <p style="font-size: 0.9rem; color: var(--text-muted);">MP3, WAV, OGG, M4A up to 100MB.</p>
+                                </div>
+                                <input type="file" id="clipFileInput" accept=".mp3,.wav,.ogg,.m4a" style="display:none;">
+                                <div class="helper-callout" style="margin-top: 18px;">
+                                    <i class="fas fa-wave-square" style="color: var(--primary);"></i>
+                                    <div>
+                                        <strong>Waveform preview</strong>
+                                        <p style="color: var(--text-muted); font-size: 0.9rem;">Use the player to audition before confirming the clip.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="audio-section" id="clipAudioSection">
+                                    <audio id="clipAudioPlayer" controls style="width: 100%; border-radius: 12px;"></audio>
+                                    <div class="slider-container">
+                                        <div class="slider-label">
+                                            <span>Start time</span>
+                                            <span id="clipStartTimeDisplay">0:00</span>
+                                        </div>
+                                        <input type="range" id="clipStartSlider" class="slider" min="0" max="100" value="0" step="0.1">
+                                        <div class="slider-label">
+                                            <span>End time</span>
+                                            <span id="clipEndTimeDisplay">0:00</span>
+                                        </div>
+                                        <input type="range" id="clipEndSlider" class="slider" min="0" max="100" value="100" step="0.1">
+                                    </div>
+                                    <div class="clip-info">
+                                        <div>
+                                            <p style="font-size: 0.85rem;">Clip duration</p>
+                                            <strong id="clipDuration" style="font-size: 1.4rem;">0:00</strong>
+                                        </div>
+                                        <p style="font-size: 0.9rem;">Loop preview to verify the cut.</p>
+                                    </div>
+                                    <div class="button-group">
+                                        <button class="btn btn-primary" id="clipBtn">Clip audio</button>
+                                        <button class="btn btn-secondary" id="clipResetBtn">Reset</button>
+                                    </div>
+                                </div>
+                                <div class="processing" id="clipProcessingDiv">
+                                    <div class="spinner" style="width: 18px; height: 18px; border: 2px solid #fff; border-top-color: transparent;"></div>
+                                    <div>
+                                        <strong>Processing clip</strong>
+                                        <p>Hang tight — this usually takes less than 10s.</p>
+                                    </div>
+                                </div>
+                                <div class="download-section" id="clipDownloadSection">
+                                    <div>
+                                        <strong>Clip ready</strong>
+                                        <p>Grab the MP3 or clip another section.</p>
+                                    </div>
+                                    <div class="button-group">
+                                        <a href="#" class="btn btn-primary" id="clipDownloadBtn">Download</a>
+                                        <button class="btn btn-secondary" id="clipResetDownloadBtn">Clip another</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Merge Files -->
+                <section id="merge-tab" class="tab-content">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div>
+                                <p class="eyebrow">Audio merger</p>
+                                <h2>Blend multiple tracks seamlessly</h2>
+                                <p style="color: var(--text-muted);">Reorder, remove, and merge while maintaining original fidelity.</p>
+                            </div>
+                            <span class="chip chip-muted"><i class="far fa-circle"></i> Awaiting files</span>
+                        </div>
+
+                        <div class="status-message" id="mergeStatusMessage"></div>
+
+                        <div class="grid-two">
+                            <div>
+                                <div class="upload-area" id="mergeUploadArea">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <p><strong>Drop multiple files</strong></p>
+                                    <p style="font-size: 0.9rem; color: var(--text-muted);">Select at least 2 files to enable merging.</p>
+                                </div>
+                                <input type="file" id="mergeFileInput" multiple accept=".mp3,.wav,.ogg,.m4a" style="display:none;">
+                                <div class="helper-callout" style="margin-top: 18px;">
+                                    <i class="fas fa-layer-group" style="color: var(--primary);"></i>
+                                    <div>
+                                        <strong>Consistent loudness</strong>
+                                        <p style="color: var(--text-muted); font-size: 0.9rem;">We level-match tracks to avoid sudden jumps.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="file-list" id="mergeFileList">
+                                    <div class="empty-state" style="border:none; background: transparent; padding: 20px;">
+                                        <i class="far fa-folder-open"></i>
+                                        <p>No files selected yet.</p>
+                                    </div>
+                                </div>
+                                <div class="button-group">
+                                    <button class="btn btn-primary" id="mergeBtn" disabled>Merge files</button>
+                                    <button class="btn btn-secondary" id="mergeClearBtn">Clear</button>
+                                </div>
+                                <div class="processing" id="mergeProcessingDiv">
+                                    <div class="spinner" style="width: 18px; height: 18px; border: 2px solid #fff; border-top-color: transparent;"></div>
+                                    <div>
+                                        <strong>Merging tracks</strong>
+                                        <p>We’ll ping you the moment the file is ready.</p>
+                                    </div>
+                                </div>
+                                <div class="download-section" id="mergeDownloadSection">
+                                    <div>
+                                        <strong>Merge ready</strong>
+                                        <p>Download or queue another merge.</p>
+                                    </div>
+                                    <div class="button-group">
+                                        <a href="#" class="btn btn-primary" id="mergeDownloadBtn">Download</a>
+                                        <button class="btn btn-secondary" id="mergeResetBtn">Merge more</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Settings placeholder -->
+                <section id="settings-tab" class="tab-content">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div>
+                                <p class="eyebrow">Workspace settings</p>
+                                <h2>Default behaviors & automation</h2>
+                                <p style="color: var(--text-muted);">Fine-tune quality, cleanup cadence, and notification preferences.</p>
+                            </div>
+                        </div>
+                        <div class="grid-two">
+                            <div>
+                                <h3>Quality presets</h3>
+                                <p style="color: var(--text-muted); margin-bottom: 12px;">Coming soon: choose between 128kbps, 192kbps, or lossless WAV.</p>
+                            </div>
+                            <div>
+                                <h3>Auto-cleanup</h3>
+                                <p style="color: var(--text-muted); margin-bottom: 12px;">Keep downloads tidy by auto-deleting after a set number of hours.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Activity placeholder -->
+                <section id="activity-tab" class="tab-content">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div>
+                                <p class="eyebrow">Recent activity</p>
+                                <h2>Everything that’s happened lately</h2>
+                                <p style="color: var(--text-muted);">Track past downloads, clips, and merges with quick re-open links.</p>
+                            </div>
+                        </div>
+                        <ul class="activity-list">
+                            <li>
+                                <span>No recent actions yet.</span>
+                                <span class="silent-pill"><i class="far fa-clock"></i> Real-time log coming soon</span>
+                            </li>
+                        </ul>
+                    </div>
+                </section>
+            </main>
         </div>
     </div>
 
     <script>
-        // Tab switching
-        document.querySelectorAll('.tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                const tabName = tab.dataset.tab;
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                tab.classList.add('active');
-                document.getElementById(`${tabName}-tab`).classList.add('active');
+        // Tab switching for nav + sections
+        const tabTriggers = document.querySelectorAll('.tab-trigger');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabTriggers.forEach(trigger => {
+            trigger.addEventListener('click', () => {
+                const tabName = trigger.dataset.tab;
+                tabTriggers.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                trigger.classList.add('active');
+
+                const target = document.getElementById(`${tabName}-tab`);
+                if (target) target.classList.add('active');
             });
         });
 
@@ -598,7 +1045,18 @@
         }
 
         function updateYoutubeUI() {
-            youtubeStatusContainer.innerHTML = Object.entries(youtubeDownloads).map(([id, download]) => `
+            const entries = Object.entries(youtubeDownloads);
+            if (!entries.length) {
+                youtubeStatusContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="far fa-circle-play"></i>
+                        <p>Drop a link to get your first download going.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            youtubeStatusContainer.innerHTML = entries.map(([id, download]) => `
                 <div class="status-item ${download.status}">
                     <div style="font-weight: 600; margin-bottom: 8px;">
                         ${download.status !== 'completed' && download.status !== 'error' ? '<span class="spinner"></span>' : ''}
@@ -785,7 +1243,12 @@
 
         function renderMergeFileList() {
             if (mergeFiles.length === 0) {
-                mergeFileList.innerHTML = '<div style="text-align: center; color: #999; padding: 20px;">No files selected yet</div>';
+                mergeFileList.innerHTML = `
+                    <div class="empty-state" style="border:none; background: transparent; padding: 20px;">
+                        <i class="far fa-folder-open"></i>
+                        <p>No files selected yet.</p>
+                    </div>
+                `;
                 return;
             }
             mergeFileList.innerHTML = mergeFiles.map((file, index) => `
